@@ -1,10 +1,11 @@
 """ Modelos Base de datos """
 from django.db import models
-from django.contrib.auth.models import(
+from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+
 
 class UserManager(BaseUserManager):
     """Manejo de usuarios."""
@@ -18,6 +19,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
+    
     def create_superuser(self, email, password):
         """Create and return a new superuser."""
         user = self.create_user(email, password)
@@ -26,6 +28,8 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
+
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Usuario del sistema."""
@@ -37,4 +41,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-
