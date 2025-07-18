@@ -1,6 +1,4 @@
-"""
-Vistas para la API de usuario.
-"""
+"""Vistas para la API de usuario."""
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
@@ -31,4 +29,3 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Recuperar y devolver el usuario autenticado."""
         return self.request.user
-    
