@@ -12,5 +12,9 @@ class Categoria(models.Model):
         related_name='categorias'
     )
 
+    class Meta:
+        db_table = 'categories_categoria'
+        unique_together = ('nombre', 'usuario')
+
     def __str__(self):
         return self.nombre
