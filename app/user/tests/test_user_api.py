@@ -13,8 +13,6 @@ CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 DEACTIVATE_URL = reverse('user:deactivate')
-RESET_REQUEST_URL = reverse('user:password_reset')
-RESET_CONFIRM_URL = reverse('user:password_reset_confirm')
 
 
 
