@@ -50,4 +50,3 @@ class DeactivateUserView(APIView):
             {'detail': 'Cuenta desactivada exitosamente.'},
             status=status.HTTP_200_OK
         )
-
