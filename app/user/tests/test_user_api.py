@@ -2,6 +2,9 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -9,6 +12,10 @@ from rest_framework import status
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
+DEACTIVATE_URL = reverse('user:deactivate')
+RESET_REQUEST_URL = reverse('user:password_reset')
+RESET_CONFIRM_URL = reverse('user:password_reset_confirm')
+
 
 
 def create_user(**params):
@@ -152,3 +159,19 @@ class PrivateUserApiTests(TestCase):
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_deactivate_user_successfully(self):
+        """Test desactivar cuenta correctamente y cerrar sesión."""
+        res = self.client.post(DEACTIVATE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_active)
+
+        # Limpiar autenticación para simular una nueva solicitud
+        self.client.force_authenticate(user=None)
+
+        # Ahora deberías obtener 401 porque ya no hay token válido
+        token_res = self.client.get(ME_URL)
+        self.assertEqual(token_res.status_code, status.HTTP_401_UNAUTHORIZED)
+

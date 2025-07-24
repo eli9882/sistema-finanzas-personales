@@ -2,6 +2,11 @@
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+
 
 from user.serializers import (
     UserSerializer,
@@ -29,3 +34,16 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Recuperar y devolver el usuario autenticado."""
         return self.request.user
+
+
+class DeactivateUserView(APIView):
+    """Desactivar la cuenta del usuario autenticado."""
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        user.is_active = False
+        user.save()
+        Token.objects.filter(user=user).delete()
+        return Response({'detail': 'Cuenta desactivada exitosamente.'}, status=status.HTTP_200_OK)
