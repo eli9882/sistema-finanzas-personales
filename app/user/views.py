@@ -46,4 +46,5 @@ class DeactivateUserView(APIView):
         user.is_active = False
         user.save()
         Token.objects.filter(user=user).delete()
-        return Response({'detail': 'Cuenta desactivada exitosamente.'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Cuenta desactivada exitosamente.'},
+                         status=status.HTTP_200_OK)
