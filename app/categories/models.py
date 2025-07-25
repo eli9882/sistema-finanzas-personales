@@ -4,6 +4,13 @@ from core.models import User  # importas tu modelo personalizado
 
 
 class Categoria(models.Model):
+    TIPO_CHOICES = [
+        ('Ingreso', 'Ingreso'),
+        ('Gasto', 'Gasto'),
+        # puedes añadir más tipos si quieres
+    ]
+
+    tipo = models.CharField(max_length=45, choices=TIPO_CHOICES)
     nombre = models.CharField(max_length=45)
     descripcion = models.CharField(max_length=150)
     usuario = models.ForeignKey(
