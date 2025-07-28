@@ -4,25 +4,27 @@ from categories.models import Categoria
 
 
 class EventoFinancieroSerializer(serializers.ModelSerializer):
-    categoria = serializers.PrimaryKeyRelatedField(
-        queryset=Categoria.objects.all(), write_only=True
+    categorias = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Categoria.objects.all()
     )
 
     class Meta:
         model = EventoFinanciero
-        fields = ['id', 'tipo', 'monto', 'fecha', 'descripcion', 'usuario', 'categoria']
+        fields = ['id', 'tipo', 'monto', 'fecha', 'descripcion', 'usuario', 'categorias']
+        read_only_fields = ['usuario']
 
     def create(self, validated_data):
-        categoria = validated_data.pop('categoria')
+        categorias = validated_data.pop('categorias', [])
         evento = EventoFinanciero.objects.create(**validated_data)
-        evento.categorias.set([categoria])
+        evento.categorias.set(categorias)
         return evento
 
     def update(self, instance, validated_data):
-        categoria = validated_data.pop('categoria', None)
+        categorias = validated_data.pop('categorias', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        if categoria:
-            instance.categorias.set([categoria])
+        if categorias is not None:
+            instance.categorias.set(categorias)
         return instance
