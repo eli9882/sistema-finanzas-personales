@@ -22,7 +22,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('categories.urls')),
+    path('categories/', include('categories.urls')),
     path('events/', include('events.urls')), 
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path(
