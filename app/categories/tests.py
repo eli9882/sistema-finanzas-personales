@@ -10,8 +10,10 @@ class CategoriaAPITests(TestCase):
         self.client = APIClient()
 
         # Crear usuarios
-        self.user1 = User.objects.create_user(email='user1@example.com', password='pass123')
-        self.user2 = User.objects.create_user(email='user2@example.com', password='pass123')
+        self.user1 = User.objects.create_user(
+            email='user1@example.com', password='pass123')
+        self.user2 = User.objects.create_user(
+            email='user2@example.com', password='pass123')
 
         # Autenticar cliente con user1 por defecto
         self.client.force_authenticate(user=self.user1)
@@ -47,13 +49,16 @@ class CategoriaAPITests(TestCase):
         self.assertNotIn('Salario', nombres)
 
     def test_crear_categoria_correctamente(self):
-        data = {'nombre': 'Transporte', 'tipo': 'Gasto', 'descripcion': 'Gasto en transporte'}
+        data = {'nombre': 'Transporte', 'tipo': 'Gasto',
+                 'descripcion': 'Gasto en transporte'}
         response = self.client.post(self.list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Categoria.objects.filter(usuario=self.user1).count(), 2)
+        self.assertEqual(Categoria.objects.filter(usuario=self.user1).count(),
+                          2)
 
     def test_crear_categoria_falla_si_nombre_repetido_mismo_usuario(self):
-        data = {'nombre': 'Comida', 'tipo': 'Gasto', 'descripcion': 'Duplicado'}
+        data = {'nombre': 'Comida', 'tipo': 'Gasto',
+                 'descripcion': 'Duplicado'}
         response = self.client.post(self.list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('nombre', response.data)
@@ -61,7 +66,8 @@ class CategoriaAPITests(TestCase):
     def test_crear_categoria_permite_nombre_igual_entre_usuarios_distintos(self):
         # Cambiar autenticación a user2
         self.client.force_authenticate(user=self.user2)
-        data = {'nombre': 'Comida', 'tipo': 'Gasto', 'descripcion': 'No importa'}
+        data = {'nombre': 'Comida', 'tipo': 'Gasto',
+                 'descripcion': 'No importa'}
         response = self.client.post(self.list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -73,7 +79,8 @@ class CategoriaAPITests(TestCase):
 
     def test_actualizar_categoria(self):
         url = self.detail_url(self.cat1.pk)
-        data = {'nombre': 'Supermercado', 'tipo': 'Gasto', 'descripcion': 'Actualizado'}
+        data = {'nombre': 'Supermercado', 'tipo': 'Gasto',
+                 'descripcion': 'Actualizado'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.cat1.refresh_from_db()
@@ -92,7 +99,8 @@ class CategoriaAPITests(TestCase):
 
     def test_usuario_no_puede_modificar_categoria_ajena(self):
         url = self.detail_url(self.cat2.pk)
-        data = {'nombre': 'No autorizado', 'tipo': 'Ingreso', 'descripcion': 'Modificación prohibida'}
+        data = {'nombre': 'No autorizado', 'tipo': 'Ingreso',
+                 'descripcion': 'Modificación prohibida'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -104,7 +112,8 @@ class CategoriaAPITests(TestCase):
     def test_anonymous_user_no_accede_api(self):
         self.client.force_authenticate(user=None)
         response = self.client.get(self.list_url)
-        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
+        self.assertIn(response.status_code, 
+                      [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
 
     def test_crear_categoria_falla_si_faltan_campos(self):
         data = {'nombre': '', 'descripcion': ''}
@@ -112,4 +121,3 @@ class CategoriaAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('nombre', response.data)
         self.assertIn('tipo', response.data)
-
