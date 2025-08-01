@@ -3,7 +3,6 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from datetime import date
-from django.utils import timezone
 from core.models import User
 from categories.models import Categoria
 from events.models import EventoFinanciero
@@ -39,7 +38,8 @@ class EventoFinancieroTests(TestCase):
         }
 
     def test_crear_evento(self):
-        response = self.client.post(reverse('evento-crud'), self.evento_data, format='json')
+        response = self.client.post(reverse('evento-crud'),
+                                     self.evento_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(EventoFinanciero.objects.count(), 1)
 
@@ -133,7 +133,8 @@ class EventoFinancieroTests(TestCase):
         self.client.logout()
         url = reverse('evento-crud')
         response = self.client.get(url)
-        self.assertIn(response.status_code, [401, 403])  # depende de DRF settings
+        self.assertIn(response.status_code, [401, 403])  
+        # depende de DRF settings
 
     def test_create_event_with_empty_data(self):
         response = self.client.post(reverse('evento-crud'), {})
@@ -142,8 +143,10 @@ class EventoFinancieroTests(TestCase):
             self.assertIn(field, response.data)
 
     def test_create_event_with_multiple_categories(self):
-        cat1 = Categoria.objects.create(nombre='Trabajo', tipo='Ingreso', usuario=self.user)
-        cat2 = Categoria.objects.create(nombre='Deporte', tipo='Gasto', usuario=self.user)
+        cat1 = Categoria.objects.create(nombre='Trabajo', 
+                                        tipo='Ingreso', usuario=self.user)
+        cat2 = Categoria.objects.create(nombre='Deporte', 
+                                        tipo='Gasto', usuario=self.user)
         data = {
             'tipo': 'Gasto',
             'monto': '1000.00',
@@ -151,7 +154,8 @@ class EventoFinancieroTests(TestCase):
             'descripcion': 'Varias cosas',
             'categorias': [cat1.id, cat2.id]
         }
-        response = self.client.post(reverse('evento-crud'), data, format='json')
+        response = self.client.post(reverse('evento-crud'), 
+                                    data, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data['categorias']), 2)
 

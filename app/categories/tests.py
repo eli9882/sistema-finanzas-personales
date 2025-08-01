@@ -5,6 +5,7 @@ from django.urls import reverse
 from core.models import User
 from categories.models import Categoria
 
+
 class CategoriaAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()

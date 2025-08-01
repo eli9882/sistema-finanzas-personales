@@ -15,3 +15,4 @@ class EventoFinancieroViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Asigna el usuario autenticado al crear
         serializer.save(usuario=self.request.user)
+        

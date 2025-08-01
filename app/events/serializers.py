@@ -11,7 +11,8 @@ class EventoFinancieroSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventoFinanciero
-        fields = ['id', 'tipo', 'monto', 'fecha', 'descripcion', 'usuario', 'categorias']
+        fields = ['id', 'tipo', 'monto', 'fecha', 'descripcion',
+                   'usuario', 'categorias']
         read_only_fields = ['usuario']
 
     def create(self, validated_data):
