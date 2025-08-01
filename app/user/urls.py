@@ -13,6 +13,8 @@ urlpatterns = [
     path('token/', views.CreateTokenView.as_view(), name='token'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('deactivate/', views.DeactivateUserView.as_view(), name='deactivate'),
-    path('password-reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
-
+    path(
+        'password-reset/',
+        include('django_rest_passwordreset.urls', namespace='password_reset')
+    ),
 ]

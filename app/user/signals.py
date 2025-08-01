@@ -19,4 +19,3 @@ def password_reset_token_created(sender, reset_password_token, **kwargs):
         recipient_list=[email],
         fail_silently=False,
     )
-
