@@ -1,5 +1,3 @@
-
-
 services:
   app:
     build:
@@ -14,7 +12,6 @@ services:
       sh -c "python manage.py wait_for_db &&
       python manage.py migrate && 
       python manage.py runserver 0.0.0.0:8000"
-
     environment:
       - DB_HOST=db
       - DB_NAME=devdb
@@ -32,6 +29,18 @@ services:
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
 
+  frontend:
+    build:
+      context: ./frontend  # Ruta donde está tu proyecto React
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
 
 volumes:
- dev-db-data:
+  dev-db-data:
