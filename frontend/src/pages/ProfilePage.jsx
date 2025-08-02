@@ -1,7 +1,6 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+
 
 export default function ProfilePage() {
   const [show, setShow] = useState(false);

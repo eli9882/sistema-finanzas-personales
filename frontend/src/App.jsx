@@ -10,6 +10,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import CheckEmailPage from "./pages/CheckEmailPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PasswordSuccessPage from "./pages/PasswordSuccessPage";
+import ProfilePage from "./pages/ProfilePage";
 import { TransactionProvider } from "./context/TransactionContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import loginImage from "./assets/finanzas.jpg";
@@ -73,6 +74,8 @@ export default function App() {
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/movimientos" element={<MovementsPage />} />
                   <Route path="/categorias" element={<CategoriesPage />} />
+                  <Route path="/perfil" element={<ProfilePage />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
             </div>
