@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'corsheaders',
     'core',
+    'categories',
+    'events',
     'user',
     'django_rest_passwordreset',
 ]
