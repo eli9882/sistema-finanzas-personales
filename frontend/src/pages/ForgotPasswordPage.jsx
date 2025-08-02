@@ -69,7 +69,6 @@ export default function ForgotPasswordPage() {
         >
           Enviar
         </button>
-        <button onClick={() => navigate("/reset-password")}>prueba</button>
 
       </form>
     </div>
