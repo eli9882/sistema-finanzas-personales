@@ -14,7 +14,6 @@ services:
       sh -c "python manage.py wait_for_db &&
       python manage.py migrate && 
       python manage.py runserver 0.0.0.0:8000"
-
     environment:
       - DB_HOST=db
       - DB_NAME=devdb
@@ -32,6 +31,18 @@ services:
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - app
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
 
 volumes:
- dev-db-data:
+  dev-db-data:
