@@ -132,6 +132,6 @@ export default function CategoryModal({
           </div>
         </form>
       </div>
-    </div>
-  );
+    </div>
+  );
 }

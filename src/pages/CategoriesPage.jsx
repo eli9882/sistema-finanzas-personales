@@ -142,6 +142,6 @@ export default function CategoriesPage() {
            validateName={isNameTaken}
         />
       )}
-    </div>
-  );
+    </div>
+  );
 }
