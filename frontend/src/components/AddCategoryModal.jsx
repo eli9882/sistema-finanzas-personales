@@ -2,36 +2,46 @@ import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
 
 export default function AddCategoryModal({ onClose, existing = null }) {
-  const { addCategory, editCategory } = useTransactions();
+  const { createCategory, updateCategory } = useTransactions();
 
   const [form, setForm] = useState({
     name: "",
     description: "",
+    type: "Ingreso",
   });
 
   useEffect(() => {
-    if (existing) setForm(existing);
-  }, [existing]);
+  if (existing) {
+    setForm({
+      name: existing.nombre || "",
+      description: existing.descripcion || "",
+      type: existing.tipo || "Ingreso",
+    });
+  }
+}, [existing]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const category = {
-      ...form,
-    };
-
-    if (existing) {
-      editCategory(category);
-    } else {
-      addCategory(category);
-    }
-
-    onClose();
+  // Prepara el objeto con los campos que espera tu backend
+  const category = {
+    nombre: form.name,
+    descripcion: form.description,
+    tipo: form.type,
   };
+
+  if (existing) {
+    updateCategory(existing.id, category);
+  } else {
+    createCategory(category);
+  }
+
+  onClose();
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -60,6 +70,19 @@ export default function AddCategoryModal({ onClose, existing = null }) {
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Tipo</label>
+            <select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            >
+              <option value="Ingreso">Ingreso</option>
+              <option value="Gasto">Gasto</option>
+            </select>
           </div>
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="px-4 py-2 border rounded">

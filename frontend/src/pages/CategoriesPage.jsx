@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useTransactions } from "../context/TransactionContext";
-import AddTransactionModal from "../components/AddCategoryModal";
+import AddCategoryModal from "../components/AddCategoryModal";
 
 export default function CategoriesPage() {
-  const { transactions, deleteTransaction } = useTransactions();
+  const { categories, deleteCategory } = useTransactions();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
@@ -15,39 +15,31 @@ export default function CategoriesPage() {
     setShowModal(true);
   };
 
-  const openEdit = (transaction) => {
-    setEditing(transaction);
+  const openEdit = (category) => {
+    setEditing(category);
     setShowModal(true);
   };
 
-  const filtered = transactions.filter((t) => {
-    const matchSearch =
-      (t.name + t.description)
-        .toLowerCase()
-        .includes(search.toLowerCase());
-
-    const matchType =
-      filterType === "all" ? true : t.type.toLowerCase() === filterType.toLowerCase();
-
+  const filtered = categories.filter((c) => {
+    const matchSearch = (c.nombre + (c.descripcion || "")).toLowerCase().includes(search.toLowerCase());
+    const matchType = filterType === "all" ? true : (c.tipo?.toLowerCase() === filterType.toLowerCase());
     return matchSearch && matchType;
   });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Categorias</h2>
+        <h2 className="text-2xl font-bold">Categorías</h2>
         <button
           onClick={openAdd}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         >
-          + Agregar Categoria
+          + Agregar Categoría
         </button>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
-        {/* Campo de búsqueda */}
         <div className="relative w-full md:w-72">
           <input
             type="text"
@@ -56,7 +48,6 @@ export default function CategoriesPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border border-gray-300 rounded pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          {/* Ícono de lupa */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
@@ -73,7 +64,7 @@ export default function CategoriesPage() {
           </svg>
         </div>
 
-        {/* Botón filtro rápido */}
+        {/* Filtro rápido */}
         <div className="relative inline-block text-left">
           <button
             type="button"
@@ -100,8 +91,8 @@ export default function CategoriesPage() {
             <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow z-10">
               {[
                 { label: "Todos", value: "all" },
-                { label: "Trabajo", value: "trabajo" },
-                { label: "Gasolina", value: "gasolina" },
+                { label: "Ingreso", value: "ingreso" },
+                { label: "Gasto", value: "gasto" },
               ].map((type) => (
                 <button
                   key={type.value}
@@ -125,7 +116,7 @@ export default function CategoriesPage() {
       <table className="w-full bg-white shadow rounded overflow-hidden text-sm">
         <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-3">id</th>
+            <th className="p-3">ID</th>
             <th className="p-3">Nombre</th>
             <th className="p-3">Descripción</th>
             <th className="p-3 text-center">Acciones</th>
@@ -133,20 +124,20 @@ export default function CategoriesPage() {
         </thead>
         <tbody>
           {filtered.length ? (
-            filtered.map((t) => (
-              <tr key={t.id} className="border-t hover:bg-gray-50">
-                <td className="p-3">{t.id}</td>
-                <td className="p-3">{t.name}</td>
-                <td className="p-3">{t.description}</td>
+            filtered.map((c) => (
+              <tr key={c.id} className="border-t hover:bg-gray-50">
+                <td className="p-3">{c.id}</td>
+                <td className="p-3">{c.nombre}</td>
+                <td className="p-3">{c.descripcion}</td>
                 <td className="p-3 text-center space-x-2">
                   <button
-                    onClick={() => openEdit(t)}
+                    onClick={() => openEdit(c)}
                     className="text-sm text-blue-600 hover:underline"
                   >
                     Editar
                   </button>
                   <button
-                    onClick={() => deleteTransaction(t.id)}
+                    onClick={() => deleteCategory (c.id)}
                     className="text-sm text-red-600 hover:underline"
                   >
                     Eliminar
@@ -156,8 +147,8 @@ export default function CategoriesPage() {
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="text-center text-gray-500 py-6 italic">
-                No hay categorias encontrados.
+              <td colSpan={4} className="text-center text-gray-500 py-6 italic">
+                No hay categorías encontradas.
               </td>
             </tr>
           )}
@@ -166,7 +157,7 @@ export default function CategoriesPage() {
 
       {/* Modal */}
       {showModal && (
-        <AddTransactionModal
+        <AddCategoryModal
           onClose={() => setShowModal(false)}
           existing={editing}
         />
