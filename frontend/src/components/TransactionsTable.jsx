@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function TransactionsTable({ transactions }) {
+export default function TransactionsTable({ transactions = [] }) {
   return (
     <div className="bg-white p-4 shadow rounded overflow-x-auto">
       <h2 className="text-lg font-semibold mb-2">Últimos movimientos</h2>
@@ -15,15 +15,31 @@ export default function TransactionsTable({ transactions }) {
           </tr>
         </thead>
         <tbody>
-          {transactions.map((t) => (
-            <tr key={t.id} className="border-t hover:bg-gray-50">
-              <td className="px-3 py-2">{t.date}</td>
-              <td className="px-3 py-2">{t.type}</td>
-              <td className="px-3 py-2">{t.category}</td>
-              <td className="px-3 py-2">{t.description}</td>
-              <td className="px-3 py-2 text-right">₡{t.amount.toLocaleString()}</td>
+          {transactions.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="text-center py-6 text-gray-500 italic">
+                No hay movimientos.
+              </td>
             </tr>
-          ))}
+          ) : (
+            transactions.map((t) => {
+              const montoNum = Number(t?.monto);
+              const montoFormateado =
+                !isNaN(montoNum) && t.monto != null
+                  ? montoNum.toLocaleString()
+                  : "0";
+
+              return (
+                <tr key={t.id} className="border-t hover:bg-gray-50">
+                  <td className="px-3 py-2">{t.fecha}</td>
+                  <td className="px-3 py-2">{t.tipo}</td>
+                  <td className="px-3 py-2">{t.categoria}</td>
+                  <td className="px-3 py-2">{t.descripcion}</td>
+                  <td className="px-3 py-2 text-right">₡{montoFormateado}</td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>

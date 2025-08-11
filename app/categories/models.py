@@ -12,7 +12,8 @@ class Categoria(models.Model):
 
     tipo = models.CharField(max_length=45, choices=TIPO_CHOICES)
     nombre = models.CharField(max_length=45)
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.CharField(max_length=150, null=True, blank=True)
+
     usuario = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

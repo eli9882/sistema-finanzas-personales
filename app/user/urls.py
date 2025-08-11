@@ -1,7 +1,7 @@
 """
 Asignaciones de URL para la API de usuario.
 """
-from django.urls import path
+from django.urls import path, include
 
 from user import views
 
@@ -13,5 +13,8 @@ urlpatterns = [
     path('token/', views.CreateTokenView.as_view(), name='token'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('deactivate/', views.DeactivateUserView.as_view(), name='deactivate'),
-
+    path(
+        'password-reset/',
+        include('django_rest_passwordreset.urls', namespace='password_reset')
+    ),
 ]

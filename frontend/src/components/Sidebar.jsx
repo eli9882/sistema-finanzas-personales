@@ -1,15 +1,24 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaChartPie, FaExchangeAlt, FaTags, FaUser } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaChartPie, FaExchangeAlt, FaTags, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth(); // ← trae el usuario y función logout
+
   const current = location.pathname;
 
   const linkStyle = (path) =>
     `flex items-center gap-2 w-full py-2 px-3 rounded hover:bg-blue-700 ${
       current === path ? "bg-blue-700" : ""
     }`;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <aside className="w-64 bg-blue-600 text-white flex flex-col justify-between">
@@ -27,9 +36,18 @@ export default function Sidebar() {
           </Link>
         </nav>
       </div>
-      <div className="p-4 flex items-center gap-2 border-t border-blue-500">
-        <FaUser />
-        <span>Juan</span>
+
+      <div className="p-4 flex flex-col gap-2 border-t border-blue-500">
+        <div className="flex items-center gap-2">
+          <FaUser />
+          <span>{user?.email || "Invitado"}</span>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-sm text-white hover:text-red-300"
+        >
+          <FaSignOutAlt /> Cerrar sesión
+        </button>
       </div>
     </aside>
   );

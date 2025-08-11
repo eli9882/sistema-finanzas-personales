@@ -1,13 +1,23 @@
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-export default function Chart({ data }) {
+export default function Chart({ data, categories }) {
+  // Agrupar gastos por categoría (por nombre)
   const gastosPorCategoria = data
-    .filter((t) => t.type === "Gasto")
+    .filter((t) => t.tipo === "Gasto")
     .reduce((acc, curr) => {
-      const index = acc.findIndex((item) => item.name === curr.category);
-      if (index !== -1) acc[index].value += curr.amount;
-      else acc.push({ name: curr.category, value: curr.amount });
+      // Obtener nombre de categoría por id
+      const categoryName = categories.find(cat => cat.id === curr.categoria)?.nombre || "Sin categoría";
+
+      // Buscar si ya está en acc
+      const index = acc.findIndex((item) => item.name === categoryName);
+      const montoNum = Number(curr.monto) || 0;
+
+      if (index !== -1) {
+        acc[index].value += montoNum;
+      } else {
+        acc.push({ name: categoryName, value: montoNum });
+      }
       return acc;
     }, []);
 

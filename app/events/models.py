@@ -14,15 +14,15 @@ class EventoFinanciero(models.Model):
     tipo = models.CharField(max_length=45, choices=TIPO_CHOICES)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha = models.DateField()
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.CharField(max_length=150, null=True, blank=True)
     usuario = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='eventos'
     )
-    categorias = models.ManyToManyField(
+    categoria = models.ForeignKey(  # CAMBIO aquí
         Categoria,
-        through='CategoriaEvento',
+        on_delete=models.CASCADE,
         related_name='eventos'
     )
 
