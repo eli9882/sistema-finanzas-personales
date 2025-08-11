@@ -8,41 +8,59 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Al cargar la app, intenta cargar token desde localStorage
+  // Cargar token y usuario al iniciar la app
   useEffect(() => {
     const tokenGuardado = localStorage.getItem("token");
     if (tokenGuardado) {
       setToken(tokenGuardado);
+      axios
+        .get(`${import.meta.env.VITE_API_BASE_URL}/user/me/`, {
+          headers: { Authorization: `Token ${tokenGuardado}` }
+        })
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch(() => {
+          setUser(null);
+        });
     }
     setLoading(false);
   }, []);
 
+  // Configurar axios cuando cambia el token
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Token ${token}`;
     } else {
       delete axios.defaults.headers.common["Authorization"];
     }
   }, [token]);
 
-
   const login = async (email, password) => {
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/user/token/`, {
-        email,
-        password,
-      });
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/user/token/`,
+      { email, password }
+    );
 
-      const { token } = response.data;
-      setUser({ email });
-      setToken(token);
-      localStorage.setItem("token", token); // Guarda el token
-      return true;
-    } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
-      return false;
-    }
-  };
+    const { token } = response.data;
+    setToken(token);
+    localStorage.setItem("token", token);
+
+    // Cargar datos del usuario
+    const userRes = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/user/me/`,
+      { headers: { Authorization: `Token ${token}` } }
+    );
+    setUser(userRes.data);
+
+    return true;
+  } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
+    return false;
+  }
+};
+
 
   const logout = () => {
     setUser(null);
@@ -50,18 +68,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
   };
 
-  const isAuthenticated = !!token;
-
-
   const register = async (name, email, password) => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/user/create/`,
-        {
-          name,
-          email,
-          password,
-        }
+        { name, email, password }
       );
 
       if (response.status === 201) {
@@ -75,10 +86,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const isAuthenticated = !!token;
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, register, loading }}>
+    <AuthContext.Provider
+      value={{ user, setUser, token, login, logout, isAuthenticated, register, loading }}
+    >
       {children}
     </AuthContext.Provider>
+
   );
 };
 

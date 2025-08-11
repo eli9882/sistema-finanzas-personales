@@ -1,53 +1,173 @@
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
-
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 export default function ProfilePage() {
-  const [show, setShow] = useState(false);
+  const { user, setUser, token, logout } = useAuth();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        password: "" // Vacía para no mostrar contraseña
+      });
+      setLoading(false);
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleUpdate = async (e) => {
+  e.preventDefault();
+  try {
+    const dataToUpdate = {
+      name: formData.name,
+      email: formData.email,
+    };
+    if (formData.password.trim() !== "") {
+      dataToUpdate.password = formData.password;
+    }
+    await axios.patch(
+  `${import.meta.env.VITE_API_BASE_URL}/user/me/`,
+  dataToUpdate,
+  {
+    headers: { Authorization: `Token ${token}` },
+  }
+);
+
+// Actualiza el usuario en el contexto para que Sidebar y otros componentes se refresquen
+setUser((prev) => ({
+  ...prev,
+  name: formData.name,
+  email: formData.email,
+}));
+
+alert("Datos actualizados correctamente");
+setFormData((f) => ({ ...f, password: "" }));
+
+  } catch (error) {
+    alert(
+      "Error al actualizar: " +
+        (error.response?.data?.detail ||
+          JSON.stringify(error.response?.data) ||
+          error.message)
+    );
+  }
+};
+
+  const handleDeactivate = async () => {
+  if (!window.confirm("¿Seguro que quieres desactivar tu cuenta?")) return;
+
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/user/deactivate/`,
+      {},
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    );
+    alert("Cuenta desactivada. Se cerrará sesión.");
+    logout();
+  } catch (error) {
+    alert(
+      "Error al desactivar: " +
+        (error.response?.data?.detail ||
+          JSON.stringify(error.response?.data) ||
+          error.message)
+    );
+  }
+};
+  // Obtener iniciales para avatar
+  const getInitials = (name) => {
+  if (!name || name.trim() === "") return "";
+
+  const names = name.trim().split(" ").filter(n => n !== "");
+  if (names.length === 0) return "";
+
+  if (names.length === 1) return names[0][0].toUpperCase();
+
+  return (names[0][0] + names[1][0]).toUpperCase();
+};
+
+
+  if (loading) return <p>Cargando...</p>;
 
   return (
-    <div className="flex h-screen">
-      <Header title="Perfil" />
-      <main className="flex-1 flex flex-col items-center py-10">
-        <form className="w-full max-w-md space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre</label>
-            <input
-              defaultValue="Juan"
-              className="w-full border rounded px-3 py-2 text-sm focus:ring-primary-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo</label>
-            <input
-              type="email"
-              defaultValue="juan23@gmail.com"
-              className="w-full border rounded px-3 py-2 text-sm focus:ring-primary-500 focus:outline-none"
-            />
-          </div>
-          {["Contraseña", "Repetir Contraseña"].map((label, i) => (
-            <div key={label} className="relative">
-              <label className="block text-sm font-medium mb-1">{label}</label>
-              <input
-                type={show ? "text" : "password"}
-                defaultValue="12345678"
-                className="w-full border rounded px-3 py-2 text-sm pr-10 focus:ring-primary-500 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShow((s) => !s)}
-                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
-              >
-                {show ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          ))}
-          <button className="w-full py-2 rounded text-white bg-primary-600 hover:bg-primary-700">
-            Guardar
-          </button>
-        </form>
-      </main>
-      <Footer />
+    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+      <div className="flex flex-col items-center mb-6">
+        <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center mb-4">
+          <span className="text-white text-5xl font-bold select-none">
+            {getInitials(user?.name || "")}
+          </span>
+        </div>
+
+      </div>
+
+      <form onSubmit={handleUpdate} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            placeholder="Tu nombre"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            placeholder="tuemail@ejemplo.com"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nueva contraseña</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            placeholder="••••••••"
+            autoComplete="new-password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
+        >
+          Guardar cambios
+        </button>
+      </form>
+
+      <hr className="my-8 border-gray-300" />
+
+      <button
+        onClick={handleDeactivate}
+        className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
+      >
+        Desactivar cuenta
+      </button>
     </div>
   );
 }

@@ -38,10 +38,10 @@ export default function Sidebar() {
       </div>
 
       <div className="p-4 flex flex-col gap-2 border-t border-blue-500">
-        <div className="flex items-center gap-2">
+        <Link to="/perfil" className="flex items-center gap-2 hover:text-blue-200">
           <FaUser />
-          <span>{user?.email || "Invitado"}</span>
-        </div>
+          <span>{user?.name || "Invitado"}</span>
+        </Link>
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 text-sm text-white hover:text-red-300"
