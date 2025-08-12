@@ -33,6 +33,7 @@ export default function AddTransactionModal({ onClose, existing = null }) {
     e.preventDefault();
 
     const transaction = {
+      id: existing?.id,
       tipo: form.type,
       monto: parseFloat(form.amount),
       fecha: form.date,
