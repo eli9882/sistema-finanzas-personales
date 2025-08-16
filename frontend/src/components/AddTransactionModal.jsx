@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
+import { useSnackbar } from "notistack";
 
 export default function AddTransactionModal({ onClose, existing = null }) {
   const { addTransaction, editTransaction, categories } = useTransactions();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [form, setForm] = useState({
     date: "",
@@ -40,13 +42,18 @@ export default function AddTransactionModal({ onClose, existing = null }) {
       categoria: Number(form.category),
     };
 
-    if (existing) {
-      editTransaction(transaction);
-    } else {
-      addTransaction(transaction);
+    try {
+      if (existing) {
+        editTransaction(transaction);
+        enqueueSnackbar("Movimiento editado correctamente.", { variant: "success" });
+      } else {
+        addTransaction(transaction);
+        enqueueSnackbar("Movimiento agregado correctamente.", { variant: "success" });
+      }
+      onClose();
+    } catch (error) {
+      enqueueSnackbar("Ocurrió un error. Intenta nuevamente.", { variant: "error" });
     }
-
-    onClose();
   };
 
   const filteredCategories = (categories || []).filter(

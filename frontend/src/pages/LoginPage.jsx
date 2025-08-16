@@ -2,23 +2,27 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import loginImagelogo from "../assets/finance-logo.png";
+import { useSnackbar } from "notistack";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
-  const success = await login(email, password);
-  if (success) {
+  const result = await login(email, password);
+
+  if (result.success) {
     navigate("/");
   } else {
-    alert("Credenciales incorrectas");
+    enqueueSnackbar(result.message, { variant: "error" });
   }
 };
+
 
   return (
    <div className="bg-white px-10 py-20 rounded-3xl border-2 border-white">

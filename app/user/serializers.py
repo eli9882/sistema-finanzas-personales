@@ -45,17 +45,29 @@ class AuthTokenSerializer(serializers.Serializer):
         """Validar y autenticar al usuario."""
         email = attrs.get('email')
         password = attrs.get('password')
+
+        # Buscamos si existe el usuario
+        UserModel = get_user_model()
+        try:
+            user_obj = UserModel.objects.get(email=email)
+        except UserModel.DoesNotExist:
+            user_obj = None
+
+        if user_obj and not user_obj.is_active:
+            msg = _('Su cuenta está desactivada. Por favor comuníquese con soporte.')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        # Si no está desactivada, intentamos autenticar normalmente
         user = authenticate(
             request=self.context.get('request'),
             username=email,
             password=password,
         )
+
         if not user:
             msg = _('Unable to authenticate with provided credentials.')
-            raise serializers.ValidationError(msg, code='authorization')
-        if not user.is_active:
-            msg = _('Esta cuenta está desactivada.')
             raise serializers.ValidationError(msg, code='authorization')
 
         attrs['user'] = user
         return attrs
+

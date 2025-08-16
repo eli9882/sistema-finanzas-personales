@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const login = async (email, password) => {
+const login = async (email, password) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/user/token/`,
@@ -54,12 +54,33 @@ export const AuthProvider = ({ children }) => {
     );
     setUser(userRes.data);
 
-    return true;
+    return { success: true };
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
-    return false;
+
+    let message = "Ocurrió un error al iniciar sesión.";
+
+    if (error.response?.data?.non_field_errors) {
+      const backendMsg = error.response.data.non_field_errors[0];
+
+      if (
+        backendMsg.includes("Unable to authenticate") || // mensaje en inglés
+        backendMsg.includes("No se pudo autenticar")    // por si usas traducción
+      ) {
+        message = "Credenciales incorrectas, verifique su correo y contraseña.";
+      } else if (
+        backendMsg.includes("desactivada") // detecta el mensaje en español
+      ) {
+        message =
+          "Su cuenta está desactivada. Por favor comuníquese con soporte al 2763-8888.";
+      }
+    }
+
+    return { success: false, message };
   }
 };
+
+
 
 
   const logout = () => {
@@ -69,6 +90,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password) => {
+    localStorage.removeItem("token"); // limpio cualquier token viejo
+    setToken(null);
+    setUser(null);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/user/create/`,

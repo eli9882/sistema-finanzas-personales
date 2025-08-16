@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
+import { useSnackbar } from "notistack";
 
 export default function AddCategoryModal({ onClose, existing = null }) {
   const { createCategory, updateCategory } = useTransactions();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [form, setForm] = useState({
     name: "",
@@ -33,13 +35,18 @@ export default function AddCategoryModal({ onClose, existing = null }) {
       tipo: form.type,
     };
 
-    if (existing) {
-      updateCategory(existing.id, category);
-    } else {
-      createCategory(category);
+      try {
+      if (existing) {
+        updateCategory(existing.id, category);
+        enqueueSnackbar(`Categoría "${category.nombre}" actualizada correctamente.`, { variant: "success" });
+      } else {
+        createCategory(category);
+        enqueueSnackbar(`Categoría "${category.nombre}" creada correctamente.`, { variant: "success" });
+      }
+      onClose();
+    } catch (error) {
+      enqueueSnackbar("Ocurrió un error. Intenta de nuevo.", { variant: "error" });
     }
-
-    onClose();
   };
 
   return (

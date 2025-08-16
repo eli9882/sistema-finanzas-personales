@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -8,24 +9,26 @@ export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const token = searchParams.get("token"); // ✅ Captura el token de la URL
+  const token = searchParams.get("token"); // Captura el token de la URL
   const email = localStorage.getItem("resetEmail"); // Email guardado desde ForgotPasswordPage
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!token) {
-      alert("Token inválido o faltante.");
+      enqueueSnackbar("Token inválido o faltante.", { variant: "error" });
       return;
     }
 
     if (!email) {
-      alert("No se encontró el correo. Intenta iniciar el proceso nuevamente.");
+      enqueueSnackbar("No se encontró el correo. Intenta iniciar el proceso nuevamente.", { variant: "error" });
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      enqueueSnackbar("Las contraseñas no coinciden.", { variant: "error" });
       return;
     }
 
@@ -36,12 +39,12 @@ export default function ResetPasswordPage() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      alert("Contraseña restablecida con éxito.");
+      enqueueSnackbar("Contraseña restablecida con éxito.", { variant: "success" });
       localStorage.removeItem("resetEmail");
       navigate("/password-success");
     } catch (error) {
       console.error("Error al restablecer:", error.response?.data || error.message);
-      alert("Hubo un error. Intenta nuevamente.");
+      enqueueSnackbar("Hubo un error. Intenta nuevamente.", { variant: "error" });
     }
 
     setPassword("");

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 export default function ProfilePage() {
   const { user, setUser, token, logout } = useAuth();
@@ -10,13 +11,14 @@ export default function ProfilePage() {
     password: ""
   });
   const [loading, setLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
         email: user.email || "",
-        password: "" // Vacía para no mostrar contraseña
+        password: ""
       });
       setLoading(false);
     }
@@ -51,15 +53,16 @@ setUser((prev) => ({
   email: formData.email,
 }));
 
-alert("Datos actualizados correctamente");
+enqueueSnackbar('Datos actualizados correctamente', { variant: 'success' });
 setFormData((f) => ({ ...f, password: "" }));
 
   } catch (error) {
-    alert(
+    enqueueSnackbar(
       "Error al actualizar: " +
         (error.response?.data?.detail ||
           JSON.stringify(error.response?.data) ||
-          error.message)
+          error.message),
+          { variant: "error" }
     );
   }
 };
@@ -75,14 +78,16 @@ setFormData((f) => ({ ...f, password: "" }));
         headers: { Authorization: `Token ${token}` },
       }
     );
-    alert("Cuenta desactivada. Se cerrará sesión.");
+
+enqueueSnackbar('Cuenta desactivada. Se cerrará sesión.', { variant: 'success' });
     logout();
   } catch (error) {
-    alert(
+      enqueueSnackbar(
       "Error al desactivar: " +
         (error.response?.data?.detail ||
           JSON.stringify(error.response?.data) ||
-          error.message)
+          error.message),
+          { variant: "error" }
     );
   }
 };

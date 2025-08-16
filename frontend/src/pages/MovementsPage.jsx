@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
 import AddTransactionModal from "../components/AddTransactionModal";
 import ConfirmModal from "../components/ConfirmModal";
+import { useSnackbar } from "notistack";
+
 
 export default function MovementsPage() {
   const { transactions, deleteTransaction, canAddTransaction, categories } = useTransactions();
@@ -12,8 +14,10 @@ export default function MovementsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
 
-  // 📌 Paginación
+
+  //  Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -29,8 +33,10 @@ export default function MovementsPage() {
 
   const openAdd = () => {
     if (!canAddTransaction()) {
-      setAlertMessage("Debes crear al menos una categoría antes de agregar un movimiento.");
-      setTimeout(() => setAlertMessage(null), 4000);
+      enqueueSnackbar(
+        "Debes crear al menos una categoría antes de agregar un movimiento.",
+        { variant: "error", autoHideDuration: 4000 }
+      );
       return;
     }
     setEditing(null);
@@ -213,6 +219,7 @@ export default function MovementsPage() {
         onConfirm={() => {
           deleteTransaction(transactionToDelete.id);
           setTransactionToDelete(null);
+          enqueueSnackbar("Movimiento eliminado correctamente.", { variant: "success" });
         }}
       />
     </div>

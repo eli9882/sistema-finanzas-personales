@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useSnackbar } from "notistack";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -9,12 +10,13 @@ export default function RegisterPage() {
   const [password2, setPassword2] = useState("");
   const navigate = useNavigate();
   const { register } = useAuth() || {};
+  const { enqueueSnackbar } = useSnackbar();
 
    const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== password2) {
-      alert("Las contraseñas no coinciden");
+       enqueueSnackbar("Las contraseñas no coinciden", { variant: "error" });
       return;
     }
 
@@ -23,10 +25,10 @@ export default function RegisterPage() {
     if (success) {
       navigate("/");  // o "/dashboard" si así lo deseas
     } else {
-      alert("Error en el registro");
+       enqueueSnackbar("Error en el registro", { variant: "error" });
     }
   } else {
-    alert("Función de registro no implementada");
+    enqueueSnackbar("Función de registro no implementada", { variant: "error" });
   }
   };
 

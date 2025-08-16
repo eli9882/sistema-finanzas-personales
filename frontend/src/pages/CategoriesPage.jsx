@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
 import AddCategoryModal from "../components/AddCategoryModal";
 import ConfirmModal from "../components/ConfirmModal";
+import { useSnackbar } from "notistack";
 
 export default function CategoriesPage() {
-  const { categories, deleteCategory } = useTransactions();
+  const { categories, transactions, deleteCategory } = useTransactions();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   //  Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,9 +38,22 @@ export default function CategoriesPage() {
   };
 
   const openEdit = (category) => {
-    setEditing(category);
-    setShowModal(true);
-  };
+  // Verificar si la categoría tiene transacciones
+  const hasTransactions = transactions.some(
+    (t) => t.categoria === category.id
+  );
+
+  if (hasTransactions) {
+    enqueueSnackbar(
+      `No se puede editar la categoría "${category.nombre}" porque tiene movimientos asociados.`,
+      { variant: "warning" }
+    );
+    return;
+  }
+
+  setEditing(category);
+  setShowModal(true);
+};
 
   const confirmDelete = (category) => {
     setCategoryToDelete(category);
@@ -47,6 +62,7 @@ export default function CategoriesPage() {
   const handleConfirmDelete = () => {
     if (categoryToDelete) {
       deleteCategory(categoryToDelete.id);
+      enqueueSnackbar(`Categoría "${categoryToDelete.nombre}" eliminada`, { variant: "success" });
       setCategoryToDelete(null);
     }
   };
@@ -55,14 +71,14 @@ export default function CategoriesPage() {
     setCategoryToDelete(null);
   };
 
-  // 📌 Filtro
+  //  Filtro
   const filtered = categories.filter((c) => {
     const matchSearch = (c.nombre + (c.descripcion || "")).toLowerCase().includes(search.toLowerCase());
     const matchType = filterType === "all" ? true : (c.tipo?.toLowerCase() === filterType.toLowerCase());
     return matchSearch && matchType;
   });
 
-  // 📌 Paginación
+  //  Paginación
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filtered.slice(startIndex, startIndex + itemsPerPage);

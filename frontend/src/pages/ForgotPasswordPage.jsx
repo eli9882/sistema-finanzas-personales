@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export default function ForgotPasswordPage() {
       navigate("/check-email");
     } catch (error) {
       console.error("Error en recuperación:", error.response?.data || error.message);
-      alert("Hubo un error. Intenta nuevamente.");
+      enqueueSnackbar("Hubo un error. Intenta nuevamente.", { variant: "error" });
     }
 
     setEmail("");
