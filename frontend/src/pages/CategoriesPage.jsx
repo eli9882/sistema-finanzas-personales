@@ -38,22 +38,19 @@ export default function CategoriesPage() {
   };
 
   const openEdit = (category) => {
-  // Verificar si la categoría tiene transacciones
-  const hasTransactions = transactions.some(
-    (t) => t.categoria === category.id
-  );
+  const hasTransactions = transactions.some((t) => t.categoria === category.id);
+
+  setEditing({ ...category, readonlyTipo: hasTransactions }); // deshabilitar tipo si tiene movimientos
+  setShowModal(true);
 
   if (hasTransactions) {
     enqueueSnackbar(
-      `No se puede editar la categoría "${category.nombre}" porque tiene movimientos asociados.`,
+      `No se puede cambiar el tipo de la categoría "${category.nombre}" porque tiene movimientos asociados.`,
       { variant: "warning" }
     );
-    return;
   }
-
-  setEditing(category);
-  setShowModal(true);
 };
+
 
   const confirmDelete = (category) => {
     setCategoryToDelete(category);

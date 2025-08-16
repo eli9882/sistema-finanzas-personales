@@ -88,6 +88,7 @@ export default function AddCategoryModal({ onClose, existing = null }) {
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 text-sm sm:text-base"
               required
+              disabled={existing?.readonlyTipo}
             >
               <option value="Ingreso">Ingreso</option>
               <option value="Gasto">Gasto</option>
