@@ -26,16 +26,18 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold">Bienvenido!</h2>
+    <div className="p-4 sm:p-6 space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold">Bienvenido!</h2>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Cards: en móvil 1 col, en sm 2 cols, en lg 3 cols */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <DashboardCard label="Total en caja actual" value={formatCurrency(totalCaja)} />
         <DashboardCard label="Ingresos del mes" value={formatCurrency(totalIngresos)} />
         <DashboardCard label="Gastos del mes" value={formatCurrency(totalGastos)} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Gráfica + Tabla: en móvil stack, en lg lado a lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Chart data={transactions} categories={categories} />
         <TransactionsTable transactions={transactions} />
       </div>

@@ -112,7 +112,7 @@ export const TransactionProvider = ({ children }) => {
 
   const editTransaction = async (transactionData) => {
     try {
-      const response = await axios.put(
+      const response = await axios.patch(
         `${import.meta.env.VITE_API_BASE_URL}/events/${transactionData.id}/`,
         transactionData,
         {

@@ -7,7 +7,8 @@ from django.dispatch import receiver
 def password_reset_token_created(sender, reset_password_token, **kwargs):
     email = reset_password_token.user.email
     token = reset_password_token.key
-    reset_url = f"http://localhost:5173/reset-password?token={token}"
+    reset_url = f"https://financeps.netlify.app/reset-password?token={token}"
+
 
     send_mail(
         subject="Recuperar contraseña",

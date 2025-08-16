@@ -27,5 +27,8 @@ RUN python -m venv /py && \
 
 
 ENV PATH="/py/bin:$PATH"
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
+CMD ["/entrypoint.sh"]
 USER django-user

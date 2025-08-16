@@ -102,72 +102,72 @@ setFormData((f) => ({ ...f, password: "" }));
   if (loading) return <p>Cargando...</p>;
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center mb-4">
-          <span className="text-white text-5xl font-bold select-none">
-            {getInitials(user?.name || "")}
-          </span>
-        </div>
-
-      </div>
-
-      <form onSubmit={handleUpdate} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            placeholder="Tu nombre"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Correo electrónico</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            placeholder="tuemail@ejemplo.com"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nueva contraseña</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            placeholder="••••••••"
-            autoComplete="new-password"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
-        >
-          Guardar cambios
-        </button>
-      </form>
-
-      <hr className="my-8 border-gray-300" />
-
-      <button
-        onClick={handleDeactivate}
-        className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
-      >
-        Desactivar cuenta
-      </button>
+    <div className="max-w-md w-full mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+  <div className="flex flex-col items-center mb-6">
+    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-400 flex items-center justify-center mb-4">
+      <span className="text-4xl sm:text-5xl font-bold text-white select-none">
+        {getInitials(user?.name || "")}
+      </span>
     </div>
+  </div>
+
+  <form onSubmit={handleUpdate} className="space-y-4 sm:space-y-6">
+    <div>
+      <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Nombre</label>
+      <input
+        type="text"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        placeholder="Tu nombre"
+        required
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Correo electrónico</label>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        placeholder="tuemail@ejemplo.com"
+        required
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Nueva contraseña</label>
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        placeholder="••••••••"
+        autoComplete="new-password"
+      />
+    </div>
+
+    <button
+      type="submit"
+      className="w-full bg-blue-400 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md transition"
+    >
+      Guardar cambios
+    </button>
+  </form>
+
+  <hr className="my-6 sm:my-8 border-gray-300" />
+
+  <button
+    onClick={handleDeactivate}
+    className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg shadow-md transition"
+  >
+    Desactivar cuenta
+  </button>
+</div>
+
   );
 }

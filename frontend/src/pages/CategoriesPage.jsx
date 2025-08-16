@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTransactions } from "../context/TransactionContext";
 import AddCategoryModal from "../components/AddCategoryModal";
 import ConfirmModal from "../components/ConfirmModal";
@@ -12,6 +12,24 @@ export default function CategoriesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
+  //  Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Detectar si es móvil o desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(5); // móvil
+      } else {
+        setItemsPerPage(10); // desktop
+      }
+    };
+    handleResize(); // ejecutar al inicio
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const openAdd = () => {
     setEditing(null);
     setShowModal(true);
@@ -22,12 +40,10 @@ export default function CategoriesPage() {
     setShowModal(true);
   };
 
-  // Función para abrir modal confirmación
   const confirmDelete = (category) => {
     setCategoryToDelete(category);
   };
 
-  // Función para confirmar eliminación
   const handleConfirmDelete = () => {
     if (categoryToDelete) {
       deleteCategory(categoryToDelete.id);
@@ -35,37 +51,46 @@ export default function CategoriesPage() {
     }
   };
 
-  // Función para cancelar eliminación
   const handleCancelDelete = () => {
     setCategoryToDelete(null);
   };
 
+  // 📌 Filtro
   const filtered = categories.filter((c) => {
     const matchSearch = (c.nombre + (c.descripcion || "")).toLowerCase().includes(search.toLowerCase());
     const matchType = filterType === "all" ? true : (c.tipo?.toLowerCase() === filterType.toLowerCase());
     return matchSearch && matchType;
   });
 
+  // 📌 Paginación
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = filtered.slice(startIndex, startIndex + itemsPerPage);
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-0">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 mb-4">
         <h2 className="text-2xl font-bold">Categorías</h2>
         <button
           onClick={openAdd}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          className="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded"
         >
-          + Agregar Categoría
+          + Agregar
         </button>
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-4">
         <div className="relative w-full md:w-72">
           <input
             type="text"
             placeholder="Buscar"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full border border-gray-300 rounded pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <svg
@@ -119,9 +144,11 @@ export default function CategoriesPage() {
                   onClick={() => {
                     setFilterType(type.value);
                     setShowFilters(false);
+                    setCurrentPage(1);
                   }}
-                  className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${filterType === type.value ? "bg-gray-100" : ""
-                    }`}
+                  className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${
+                    filterType === type.value ? "bg-gray-100" : ""
+                  }`}
                 >
                   {type.label}
                 </button>
@@ -131,48 +158,129 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      {/* Tabla */}
-      <table className="w-full bg-white shadow rounded overflow-hidden text-sm">
-        <thead className="bg-gray-100 text-left">
-          <tr>
-            <th className="p-3">ID</th>
-            <th className="p-3">Nombre</th>
-            <th className="p-3">Descripción</th>
-            <th className="p-3 text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.length ? (
-            filtered.map((c) => (
-              <tr key={c.id} className="border-t hover:bg-gray-50">
-                <td className="p-3">{c.id}</td>
-                <td className="p-3">{c.nombre}</td>
-                <td className="p-3">{c.descripcion}</td>
-                <td className="p-3 text-center space-x-2">
+      {/* Vista de Cards en móvil */}
+      <div className="grid gap-4 md:hidden">
+        {currentItems.length ? (
+          currentItems.map((c) => (
+            <div key={c.id} className="bg-white shadow rounded p-4">
+              <h3 className="font-semibold">{c.nombre}</h3>
+              <p className="text-sm text-gray-500">{c.descripcion}</p>
+              <div className="mt-2 flex justify-between text-sm">
+                {/* 👇 En móvil mostramos el tipo*/}
+                <span
+                  className={`font-medium ${
+                    c.tipo?.trim().toLowerCase() === "ingreso"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {c.tipo ? c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1) : "N/A"}
+                </span>
+
+                <div className="space-x-2">
                   <button
                     onClick={() => openEdit(c)}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
                     Editar
                   </button>
                   <button
-                    onClick={() => confirmDelete(c)} // abrir modal confirmación
-                    className="text-sm text-red-600 hover:underline"
+                    onClick={() => confirmDelete(c)}
+                    className="text-red-600 hover:underline"
                   >
                     Eliminar
                   </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 italic">
+            No hay categorías encontradas.
+          </p>
+        )}
+      </div>
+
+      {/* Tabla en desktop */}
+      <div className="hidden md:block overflow-x-auto mt-4">
+        <table className="min-w-[600px] w-full bg-white shadow rounded overflow-hidden text-sm">
+          <thead className="bg-gray-100 text-left">
+            <tr>
+              <th className="p-3">ID</th>
+              <th className="p-3">Nombre</th>
+              <th className="p-3">Descripción</th>
+              <th className="p-3">Tipo</th>
+              <th className="p-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length ? (
+              currentItems.map((c) => (
+                <tr key={c.id} className="border-t hover:bg-gray-50">
+                  <td className="p-3">{c.id}</td>
+                  <td className="p-3">{c.nombre}</td>
+                  <td className="p-3">{c.descripcion}</td>
+                  <td className="p-3">
+                    <span
+  className={`font-medium ${
+    c.tipo?.trim().toLowerCase() === "ingreso"
+      ? "text-green-600"
+      : "text-red-600"
+  }`}
+>
+  {c.tipo ? c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1) : "N/A"}
+</span>
+
+                  </td>
+                  <td className="p-3 text-center space-x-2">
+                    <button
+                      onClick={() => openEdit(c)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => confirmDelete(c)}
+                      className="text-sm text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="text-center text-gray-500 py-6 italic">
+                  No hay categorías encontradas.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4} className="text-center text-gray-500 py-6 italic">
-                No hay categorías encontradas.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/*Paginación */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

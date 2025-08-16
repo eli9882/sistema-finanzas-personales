@@ -24,7 +24,6 @@ export default function AddTransactionModal({ onClose, existing = null }) {
     }
   }, [existing]);
 
-
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -33,11 +32,12 @@ export default function AddTransactionModal({ onClose, existing = null }) {
     e.preventDefault();
 
     const transaction = {
+      id: existing?.id,
       tipo: form.type,
       monto: parseFloat(form.amount),
       fecha: form.date,
       descripcion: form.description,
-      categoria: Number(form.category),  // <-- aquí
+      categoria: Number(form.category),
     };
 
     if (existing) {
@@ -53,35 +53,34 @@ export default function AddTransactionModal({ onClose, existing = null }) {
     (cat) => (cat.tipo || "").toLowerCase() === (form.type || "").toLowerCase()
   );
 
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded shadow w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 px-4">
+      <div className="bg-white p-6 rounded-lg shadow w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <h2 className="text-xl font-semibold mb-4 text-center">
           {existing ? "Editar movimiento" : "Agregar movimiento"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Fecha */}
           <div>
-            <label className="block text-sm font-medium">Fecha</label>
+            <label className="block text-sm font-medium mb-1">Fecha</label>
             <input
               type="date"
               name="date"
               value={form.date}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm"
               required
             />
           </div>
 
           {/* Tipo */}
           <div>
-            <label className="block text-sm font-medium">Tipo</label>
+            <label className="block text-sm font-medium mb-1">Tipo</label>
             <select
               name="type"
               value={form.type}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm"
             >
               <option value="Ingreso">Ingreso</option>
               <option value="Gasto">Gasto</option>
@@ -90,12 +89,12 @@ export default function AddTransactionModal({ onClose, existing = null }) {
 
           {/* Categoría */}
           <div>
-            <label className="block text-sm font-medium">Categoría</label>
+            <label className="block text-sm font-medium mb-1">Categoría</label>
             <select
               name="category"
               value={form.category}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm"
               required
             >
               <option value="">Selecciona una categoría</option>
@@ -109,44 +108,44 @@ export default function AddTransactionModal({ onClose, existing = null }) {
 
           {/* Monto */}
           <div>
-            <label className="block text-sm font-medium">Monto</label>
+            <label className="block text-sm font-medium mb-1">Monto</label>
             <input
               type="number"
               name="amount"
               value={form.amount}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm"
               required
             />
           </div>
 
           {/* Descripción */}
           <div>
-            <label className="block text-sm font-medium">Descripción</label>
+            <label className="block text-sm font-medium mb-1">Descripción</label>
             <input
               type="text"
               name="description"
               value={form.description}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-sm"
               required
             />
           </div>
 
           {/* Botones */}
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded"
+              className="w-full sm:w-auto px-4 py-2 border rounded text-sm hover:bg-gray-100"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-400 text-white rounded text-sm hover:bg-blue-500"
             >
-              {existing ? "Guardar cambios" : "Agregar"}
+              {existing ? "Guardar" : "Agregar"}
             </button>
           </div>
         </form>
