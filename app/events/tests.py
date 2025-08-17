@@ -39,16 +39,16 @@ class EventoFinancieroTests(TestCase):
 
     def test_crear_evento(self):
         response = self.client.post(
-        reverse('evento-crud'),
-        self.evento_data,
-        format='json'
+            reverse('evento-crud'),
+            self.evento_data,
+            format='json'
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(EventoFinanciero.objects.count(), 1)
 
     def test_listar_eventos(self):
-        evento = EventoFinanciero.objects.create(
+        EventoFinanciero.objects.create(
             tipo='Ingreso',
             monto=1500.00,
             fecha=date.today(),
@@ -147,7 +147,10 @@ class EventoFinancieroTests(TestCase):
             self.assertIn(field, response.data)
 
     def test_get_nonexistent_event_returns_404(self):
-        url = reverse('evento-detail', kwargs={'pk': 99999})
+        url = reverse(
+        'evento-detail',
+        kwargs={'pk': 99999}
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
