@@ -3,7 +3,6 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from datetime import date
-from django.utils import timezone
 from core.models import User
 from categories.models import Categoria
 from events.models import EventoFinanciero
@@ -39,7 +38,12 @@ class EventoFinancieroTests(TestCase):
         }
 
     def test_crear_evento(self):
-        response = self.client.post(reverse('evento-crud'), self.evento_data, format='json')
+        response = self.client.post(
+        reverse('evento-crud'),
+        self.evento_data,
+        format='json'
+        )
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(EventoFinanciero.objects.count(), 1)
 
