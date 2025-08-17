@@ -35,7 +35,7 @@ class EventoFinancieroTests(TestCase):
             'monto': '2500.00',
             'fecha': date.today(),
             'descripcion': 'Pago de bus',
-            'categorias': [self.categoria.id]
+            'categoria': self.categoria.id
         }
 
     def test_crear_evento(self):
@@ -49,9 +49,9 @@ class EventoFinancieroTests(TestCase):
             monto=1500.00,
             fecha=date.today(),
             descripcion='Salario',
-            usuario=self.user
+            usuario=self.user,
+            categoria=self.categoria
         )
-        evento.categorias.set([self.categoria])
         response = self.client.get(reverse('evento-crud'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(response.data), 1)
@@ -62,9 +62,9 @@ class EventoFinancieroTests(TestCase):
             monto=2000.00,
             fecha=date.today(),
             descripcion='Comida',
-            usuario=self.user
+            usuario=self.user,
+            categoria=self.categoria
         )
-        evento.categorias.set([self.categoria])
         url = reverse('evento-detail', kwargs={'pk': evento.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -76,9 +76,9 @@ class EventoFinancieroTests(TestCase):
             monto=2000.00,
             fecha=date.today(),
             descripcion='Taxi',
-            usuario=self.user
+            usuario=self.user,
+            categoria=self.categoria
         )
-        evento.categorias.set([self.categoria])
         url = reverse('evento-detail', kwargs={'pk': evento.id})
 
         nueva_categoria = Categoria.objects.create(
@@ -90,14 +90,14 @@ class EventoFinancieroTests(TestCase):
 
         patch_data = {
             'descripcion': 'Uber',
-            'categorias': [nueva_categoria.id]
+            'categoria': nueva_categoria.id
         }
 
         response = self.client.patch(url, patch_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         evento.refresh_from_db()
         self.assertEqual(evento.descripcion, 'Uber')
-        self.assertIn(nueva_categoria, evento.categorias.all())
+        self.assertEqual(evento.categoria, nueva_categoria)
 
     def test_eliminar_evento(self):
         evento = EventoFinanciero.objects.create(
@@ -105,9 +105,9 @@ class EventoFinancieroTests(TestCase):
             monto=1000.00,
             fecha=date.today(),
             descripcion='Internet',
-            usuario=self.user
+            usuario=self.user,
+            categoria=self.categoria
         )
-        evento.categorias.set([self.categoria])
         url = reverse('evento-detail', kwargs={'pk': evento.id})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -123,7 +123,8 @@ class EventoFinancieroTests(TestCase):
             monto=500,
             fecha=date.today(),
             descripcion='Otro evento',
-            usuario=other_user
+            usuario=other_user,
+            categoria=self.categoria
         )
         url = reverse('evento-detail', kwargs={'pk': other_event.id})
         response = self.client.get(url)
@@ -141,20 +142,6 @@ class EventoFinancieroTests(TestCase):
         for field in ['tipo', 'monto', 'fecha', 'descripcion']:
             self.assertIn(field, response.data)
 
-    def test_create_event_with_multiple_categories(self):
-        cat1 = Categoria.objects.create(nombre='Trabajo', tipo='Ingreso', usuario=self.user)
-        cat2 = Categoria.objects.create(nombre='Deporte', tipo='Gasto', usuario=self.user)
-        data = {
-            'tipo': 'Gasto',
-            'monto': '1000.00',
-            'fecha': date.today(),
-            'descripcion': 'Varias cosas',
-            'categorias': [cat1.id, cat2.id]
-        }
-        response = self.client.post(reverse('evento-crud'), data, format='json')
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(response.data['categorias']), 2)
-
     def test_get_nonexistent_event_returns_404(self):
         url = reverse('evento-detail', kwargs={'pk': 99999})
         response = self.client.get(url)
@@ -166,9 +153,9 @@ class EventoFinancieroTests(TestCase):
             monto=1000,
             fecha=date.today(),
             descripcion='Prueba inválida',
-            usuario=self.user
+            usuario=self.user,
+            categoria=self.categoria
         )
-        event.categorias.set([self.categoria])
         url = reverse('evento-detail', kwargs={'pk': event.id})
 
         data = {
