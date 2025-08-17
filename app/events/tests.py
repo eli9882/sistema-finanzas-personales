@@ -139,7 +139,7 @@ class EventoFinancieroTests(TestCase):
     def test_create_event_with_empty_data(self):
         response = self.client.post(reverse('evento-crud'), {})
         self.assertEqual(response.status_code, 400)
-        for field in ['tipo', 'monto', 'fecha', 'descripcion']:
+        for field in ['tipo', 'monto', 'fecha', 'categoria']:
             self.assertIn(field, response.data)
 
     def test_get_nonexistent_event_returns_404(self):
