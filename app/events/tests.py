@@ -148,8 +148,8 @@ class EventoFinancieroTests(TestCase):
 
     def test_get_nonexistent_event_returns_404(self):
         url = reverse(
-        'evento-detail',
-        kwargs={'pk': 99999}
+            'evento-detail',
+            kwargs={'pk': 99999}
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
