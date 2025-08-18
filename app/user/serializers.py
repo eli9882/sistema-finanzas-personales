@@ -54,7 +54,11 @@ class AuthTokenSerializer(serializers.Serializer):
             user_obj = None
 
         if user_obj and not user_obj.is_active:
-            msg = _('Su cuenta está desactivada. Por favor comuníquese con soporte.')
+            msg = _(
+            'Su cuenta está desactivada. '
+            'Por favor comuníquese con soporte.'
+            )
+
             raise serializers.ValidationError(msg, code='authorization')
 
         # Si no está desactivada, intentamos autenticar normalmente

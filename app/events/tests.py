@@ -138,7 +138,7 @@ class EventoFinancieroTests(TestCase):
         self.client.logout()
         url = reverse('evento-crud')
         response = self.client.get(url)
-        self.assertIn(response.status_code, [401, 403])  # depende de DRF settings
+        self.assertIn(response.status_code, [401, 403])
 
     def test_create_event_with_empty_data(self):
         response = self.client.post(reverse('evento-crud'), {})
@@ -148,9 +148,10 @@ class EventoFinancieroTests(TestCase):
 
     def test_get_nonexistent_event_returns_404(self):
         url = reverse(
-            'evento-detail',
-            kwargs={'pk': 99999}
-        )
+    'evento-detail',
+    kwargs={'pk': 99999}
+)
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
