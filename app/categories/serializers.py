@@ -5,9 +5,10 @@ from .models import Categoria
 class CategoriaSerializer(serializers.ModelSerializer):
     # El campo 'tipo' hereda el 'choices' del modelo y es requerido por defecto
     tipo = serializers.ChoiceField(
-    choices=Categoria.TIPO_CHOICES,
-    required=True
+        choices=Categoria.TIPO_CHOICES,
+        required=True
     )
+
     class Meta:
         model = Categoria
         fields = ['id', 'tipo', 'nombre', 'descripcion']
@@ -20,7 +21,8 @@ class CategoriaSerializer(serializers.ModelSerializer):
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
             raise serializers.ValidationError(
-                "Ya tienes una categoría con este nombre.")
+                "Ya tienes una categoría con este nombre."
+            )
         return value
 
     def create(self, validated_data):

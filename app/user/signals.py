@@ -9,7 +9,6 @@ def password_reset_token_created(sender, reset_password_token, **kwargs):
     token = reset_password_token.key
     reset_url = f"https://financeps.netlify.app/reset-password?token={token}"
 
-
     send_mail(
         subject="Recuperar contraseña",
         message=(
