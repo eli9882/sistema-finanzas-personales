@@ -1,6 +1,9 @@
 # views.py
 from rest_framework import permissions
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    RetrieveUpdateDestroyAPIView,
+    ListCreateAPIView,
+)
 from .models import Categoria
 from .serializers import CategoriaSerializer
 

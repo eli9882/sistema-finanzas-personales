@@ -41,7 +41,11 @@ class EventoFinancieroTests(TestCase):
 
     def test_crear_evento(self):
         """Debe crear un evento financiero con éxito"""
-        response = self.client.post(reverse('evento-crud'), self.evento_data, format='json')
+        response = self.client.post(
+            reverse('evento-crud'),
+            self.evento_data,
+            format='json'
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(EventoFinanciero.objects.count(), 1)
         evento = EventoFinanciero.objects.first()
@@ -119,4 +123,6 @@ class EventoFinancieroTests(TestCase):
         url = reverse('evento-detail', kwargs={'pk': evento.id})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(EventoFinanciero.objects.filter(pk=evento.id).exists())
+        self.assertFalse(
+            EventoFinanciero.objects.filter(pk=evento.id).exists()
+        )

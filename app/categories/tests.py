@@ -76,7 +76,7 @@ class CategoriaAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('nombre', response.data)
 
-    def test_crear_categoria_permite_nombre_igual_entre_usuarios_distintos(self):
+    def test_categoria_permite_nombre_igual_entre_usuarios_distintos(self):
         # Cambiar autenticación a user2
         self.client.force_authenticate(user=self.user2)
         data = {
