@@ -4,9 +4,10 @@ from .models import Categoria
 
 class CategoriaSerializer(serializers.ModelSerializer):
     # El campo 'tipo' hereda el 'choices' del modelo y es requerido por defecto
-    tipo = serializers.ChoiceField(choices=Categoria.TIPO_CHOICES,
-                                    required=True)
-
+    tipo = serializers.ChoiceField(
+    choices=Categoria.TIPO_CHOICES,
+    required=True
+    )
     class Meta:
         model = Categoria
         fields = ['id', 'tipo', 'nombre', 'descripcion']
